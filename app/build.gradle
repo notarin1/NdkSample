@@ -1,20 +1,70 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.model.application'
 
-android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+model {
+    android {
+        compileSdkVersion = 22
+        buildToolsVersion = "22.0.1"
 
-    defaultConfig {
-        applicationId "com.example.st20384.ndksample"
-        minSdkVersion 18
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        defaultConfig.with {
+            applicationId = "com.example.st20384.ndksample"
+            minSdkVersion.apiLevel = 18
+            targetSdkVersion.apiLevel = 22
+            versionCode = 1
+            versionName = "1.0"
+        }
+        // package除外は多少法則が乱れる。ややこしい。
+        packagingOptions.with {
+            exclude 'LICENSE.txt'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'androidannotations-api.properties'
+            exclude 'services/com.fasterxml.jackson.core.JsonFactory'
+            exclude 'services/com.fasterxml.jackson.core.ObjectCodec'
+        }
     }
-    buildTypes {
+
+    android.buildTypes {
+        debug {
+            isJniDebuggable = true
+        }
+
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = false
+            proguardFiles += file('proguard-rules.pro')
+        }
+    }
+
+    android.sources {
+        main {
+            jni {
+                source {
+                    // JNIのソースディレクトリを変更したい場合、コレで追加削除できる
+                    srcDirs = [file("src/main/jni"), file("ndk")]
+                }
+            }
+        }
+    }
+
+    // libapp.so が生成される。使用するActivityで static {System.loadLibrary("app"); } とする。
+    android.ndk {
+        moduleName = "app"
+        ldLibs += "log"
+    }
+
+    android.productFlavors {
+        // 特定のabiだけビルドしたい
+//        create("arm7") {
+//            ndk.abiFilters += "armeabi-v7a"
+//        }
+
+        // x86ターゲット(Geny Motion含む)
+        create("x86") {
+            ndk.abiFilters += "x86"
+        }
+
+        // 全部のabiをビルドしたい
+        create("fat") {
         }
     }
 }
