@@ -5,6 +5,7 @@
 #include "hello.h"
 
 CHello::CHello()  {
+    g_vm = NULL;
     __android_log_print(ANDROID_LOG_INFO, "CHello", "constructor");
 }
 

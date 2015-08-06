@@ -12,12 +12,16 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("app");
     }
 
+    native void init();
+    native void deinit();
     native String createMessage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        init();
 
         TextView txtTitle = (TextView)findViewById(R.id.txtTitle);
         txtTitle.setText(createMessage());
@@ -43,5 +47,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deinit();
     }
 }
