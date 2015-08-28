@@ -50,6 +50,8 @@ model {
     android.ndk {
         moduleName = "app"
         ldLibs += "log"
+        ldLibs += "GLESv3"
+        ldLibs += "EGL"
     }
 
     android.productFlavors {
